@@ -21,6 +21,8 @@ game_over = False
 flying = False
 interval = 1500
 last_pipe = pygame.time.get_ticks() - interval
+score = 0
+past_pipe = False
 
 
 class Bird(pygame.sprite.Sprite):
@@ -105,6 +107,35 @@ while run == True:
             pipe_group.add(tube1)
             pipe_group.add(tube2)
             last_pipe = pygame.time.get_ticks()
+            floor_x -= 1
+        if floor_x <= -36:
+            floor_x = 0
+
+    if bird.rect.bottom > 768:
+        flying = False 
+        game_over = True
+    
+    if pygame.sprite.groupcollide(Bird_group,pipe_group,False,False):
+        game_over = True
+    
+    
+    
+    if len(pipe_group) > 0:
+        if Bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left and Bird_group.sprites()[0].rect.right < pipe_group.sprites()[0].rect.right and past_pipe == False:
+            past_pipe = True
+    
+        if past_pipe == True:
+            if Bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
+                score += 1
+                past_pipe = False
+
+    if game_over == True:
+        font = pygame.font.SysFont("calibri",60)
+        text = font.render("GAME OVER!",True,"red")
+        screen.blit(text,(200,400))
+
+
+
     
 
     Bird_group.draw(screen)
@@ -113,9 +144,11 @@ while run == True:
     pipe_group.update()
 
     screen.blit(floor,(floor_x,768))
-    floor_x -= 1
-    if floor_x <= -36:
-        floor_x = 0
+
+    font = pygame.font.SysFont("calibri",20)
+    text = font.render("Score:"+str(score),True,"red")
+    screen.blit(text,(20,10))
+    
     
 
 
